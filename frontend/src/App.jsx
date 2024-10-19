@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import { TaskItem } from "./components/TaskItem";
+import { logError } from "./utils/logError";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [id, setId] = useState('');
+  const [editingTaskId, setEditingTaskId] = useState('');
 
   useEffect(() => {
     fetchTasks();
@@ -75,7 +76,7 @@ export default function App() {
   function startEditing(task) {
     setTask(task.task);
     setIsEditing(true)
-    setId(task.id)
+    setEditingTaskId(task.id)
   }
 
   return (
@@ -89,7 +90,7 @@ export default function App() {
           onChange={(e) => setTask(e.target.value)}
         />
         {
-          isEditing ? <button onClick={() => handleUpdateTask(id, { task })}>Update</button>
+          isEditing ? <button onClick={() => handleUpdateTask(editingTaskId, { task })}>Update</button>
             : <button onClick={handleAddTask} disabled={!task.trim()}>Add</button>
         }
       </label>
@@ -104,10 +105,4 @@ export default function App() {
       </ul>
     </div>
   )
-}
-
-
-
-function logError(msg, error){
-  console.error(`${msg}: `, error)
 }
