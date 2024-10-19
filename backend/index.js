@@ -33,7 +33,13 @@ app.delete('/api/task/:id', (req, res) => {
   res.json({ tasks });
 })
 
-
+app.put('/api/task/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { task, isCompleted } = req.body;
+  const taskItem = tasks.find(task => task.id === id);
+  tasks.splice(id, 1, { ...taskItem, task, isCompleted })
+  res.json({ tasks })
+})
 
 app.listen(PORT, () => {
   console.log(`Server is running at ${PORT}`);
