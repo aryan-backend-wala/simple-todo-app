@@ -7,7 +7,7 @@ app.use(express.json());
 
 const tasks = [
   { id: 0, task: "buy a grocery", isCompleted: false },
-  { id: 1, task: "buy a milk", isCompleted: false },
+  { id: 1, task: "buy a milk", isCompleted: true },
   { id: 2, task: "go to gym", isCompleted: false }
 ];
 let id = 3;
