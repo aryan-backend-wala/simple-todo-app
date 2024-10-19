@@ -35,13 +35,18 @@ app.delete('/api/task/:id', (req, res) => {
 
 app.put('/api/task/:id', (req, res) => {
   const id = req.params.id;
-  const { isCompleted } = req.body;
+  const { task, isCompleted } = req.body;
   const taskIndex = tasks.findIndex(task => task.id === id);
   if(taskIndex === -1) {
     return res.status(404).json({ msg: 'Task not found' })
   }
-  const taskItem = tasks.find(task => task.id === id);
-  tasks[taskIndex] = { ...taskItem, isCompleted }
+
+  const existingTask = tasks[taskIndex];
+  tasks[taskIndex] = { 
+    ...existingTask,
+    ...(task && { task: task }),
+    ...(isCompleted !== undefined && { isCompleted })
+   }
   res.json({ msg: 'Task Updated!', tasks })
 })
 
