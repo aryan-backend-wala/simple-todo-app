@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { TaskItem } from "./components/TaskItem";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -16,7 +17,7 @@ export default function App() {
       const data = await res.json();
       setTasks(data.tasks)
     } catch (err) {
-      console.error("Error Fetching tasks: ", err)
+      logError('Error Fetching tasks', err)
     }
   }
 
@@ -36,7 +37,7 @@ export default function App() {
       setTasks(data.tasks);
       setTask("")
     } catch (err) {
-      console.error('Error: ', err);
+      logError('Error Creating Task', err);
     }
   }
 
@@ -48,7 +49,7 @@ export default function App() {
       const data = await res.json();
       setTasks(data.tasks);
     } catch (err) {
-      console.error('Error deleting task: ', err)
+      logError('Error deleting task', err)
     }
   }
 
@@ -67,7 +68,7 @@ export default function App() {
       setIsEditing(false)
       setTask('')
     } catch (err) {
-      console.log('Error Updating task: ', err);
+      logError('Error Updating task', err)
     }
   }
 
@@ -98,10 +99,6 @@ export default function App() {
           task={task}
           onDelete={handleDeleteTask}
           onUpdate={handleUpdateTask}
-          setTask={setTask}
-          newTask={task}
-          setIsEditing={setIsEditing}
-          setId={setId}
           startEditing={startEditing}
         />)}
       </ul>
@@ -109,15 +106,8 @@ export default function App() {
   )
 }
 
-function TaskItem({ task, onDelete, onUpdate, startEditing }) {
-  return <li>
-    <span className={task.isCompleted ? 'line' : ''} onClick={() => startEditing(task)}>{task.task}</span>
-    <input
-      type="checkbox"
-      checked={task.isCompleted}
-      onChange={() => onUpdate(task.id, { isCompleted: !task.isCompleted })}
-    />
-    <button onClick={() => onDelete(task.id)}>Delete</button>
-  </li>
-}
 
+
+function logError(msg, error){
+  console.error(`${msg}: `, error)
+}
