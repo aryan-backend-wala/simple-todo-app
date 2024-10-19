@@ -3,7 +3,6 @@ import { useEffect, useState } from "react"
 export default function App() {
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState('');
-  const [isCompleted, setIsCompleted] = useState(null);
 
   useEffect(() => {
     fetchTasks();
@@ -50,26 +49,25 @@ export default function App() {
     }
   }
 
-  async function handleUpdateTask(id) {
+  async function handleUpdateTask(id, newStatus) {
     try {
-        const res = await fetch(`/api/task/${id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            task,
-            isCompleted: !isCompleted
-          }),
-          headers: {
-            "Content-Type": "application/json"
-          }
+      const res = await fetch(`/api/task/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          isCompleted: newStatus
+        }),
+        headers: {
+          "Content-Type": "application/json"
         }
+      }
       );
       const data = await res.json();
       setTasks(data.tasks);
       setTask('')
-    } catch(err) {
+    } catch (err) {
       console.log('Error Updating task: ', err);
     }
-  } 
+  }
 
   return (
     <div>
@@ -81,24 +79,28 @@ export default function App() {
           value={task}
           onChange={(e) => setTask(e.target.value)}
         />
-        <button onClick={handleAddTask}>Add</button>
+        <button onClick={handleAddTask} disabled={!task.trim()}>Add</button>
       </label>
       <ul>
-        {tasks.map(task => (
-          <li key={task.id}>
-            <h3>
-              <span className={task.isCompleted ? 'line' : 'none'} onClick={() => setTask(task.task)}>{task.task}</span>
-              <input
-                type="checkbox"
-                defaultChecked={task.isCompleted}
-                onClick={() => setIsCompleted(task.isCompleted)}
-              />
-              <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
-              <button onClick={() => handleUpdateTask(task.id)}>Update</button>
-            </h3>
-          </li>
-        ))}
+        {tasks.map(task => <TaskItem
+          key={task.id}
+          task={task} 
+          onDelete={handleDeleteTask} 
+          onUpdate={handleUpdateTask} 
+        />)}
       </ul>
     </div>
   )
+}
+
+function TaskItem({task, onDelete, onUpdate}) {
+  return <li>
+    <span className={task.isCompleted ? 'line' : ''}>{task.task}</span>
+    <input
+      type="checkbox"
+      checked={task.isCompleted}
+      onChange={() => onUpdate(task.id, !task.isCompleted)}
+    />
+    <button onClick={() => onDelete(task.id)}>Delete</button>
+  </li>
 }
