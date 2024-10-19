@@ -5,8 +5,12 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-const tasks = [];
-let id = 0;
+const tasks = [
+  { id: 0, task: "buy a grocery", isCompleted: false },
+  { id: 1, task: "buy a milk", isCompleted: false },
+  { id: 2, task: "go to gym", isCompleted: false }
+];
+let id = 3;
 
 app.get('/api/tasks', (req, res) => {
   res.json({ tasks });
@@ -21,6 +25,15 @@ app.post('/api/task', (req, res) => {
   id++;
   res.json({ message: 'Task Added!' })
 })
+
+app.delete('/api/task/:id', (req, res) => {
+  const id = req.params.id;
+  const taskIndex = tasks.findIndex(task => task.id === parseInt(id));
+  tasks.splice(taskIndex, 1);
+  res.json({ tasks });
+})
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running at ${PORT}`);
