@@ -21,7 +21,7 @@ export default function App() {
 
   async function handleAddTask() {
     try {
-      await fetch("/api/task", {
+      const res = await fetch("/api/task", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -31,8 +31,9 @@ export default function App() {
           isCompleted: false
         })
       })
+      const data = await res.json();
+      setTasks(data.tasks);
       setTask("")
-      fetchTasks()
     } catch (err) {
       console.error('Error: ', err);
     }
@@ -43,7 +44,7 @@ export default function App() {
       const res = await fetch(`/api/task/${id}`, { method: 'DELETE' })
       fetchTasks();
       const data = await res.json();
-      alert(data.msg);
+      setTasks(data.tasks);
     } catch (err) {
       console.log('Error deleting task: ', err)
     }
@@ -62,9 +63,8 @@ export default function App() {
           }
         }
       );
-      fetchTasks();
       const data = await res.json();
-      alert(data.msg);
+      setTasks(data.tasks);
       setTask('')
     } catch(err) {
       console.log('Error Updating task: ', err);

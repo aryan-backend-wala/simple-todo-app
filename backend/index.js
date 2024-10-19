@@ -1,4 +1,5 @@
 import express from 'express'
+import { v4 as uuidv4 } from 'uuid';
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -21,26 +22,32 @@ app.post('/api/task', (req, res) => {
   if(!task) {
     return res.status(400).json({ message: "Task not included" });
   }
-  tasks.push({ id, task, isCompleted });
+  tasks.push({ id: uuidv4(), task, isCompleted });
   id++;
-  res.json({ message: 'Task Added!' })
+  res.json({ message: 'Task Added!', tasks })
 })
 
 app.delete('/api/task/:id', (req, res) => {
   const id = req.params.id;
   const taskIndex = tasks.findIndex(task => task.id === parseInt(id));
+  if(taskIndex === -1) {
+    return res.status(404).json({ msg: "Task not found" })
+  }
   tasks.splice(taskIndex, 1);
-  res.json({ msg: 'Successful' });
+  res.json({ msg: 'Task Deleted!', tasks });
 })
 
 app.put('/api/task/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const { task, isCompleted } = req.body;
-  console.log(task, isCompleted)
+  const taskIndex = tasks.findIndex(task => task.id === id);
+  if(taskIndex === -1) {
+    return res.status(404).json({ msg: 'Task not found' })
+  }
   const taskItem = tasks.find(task => task.id === id);
-  tasks.splice(id, 1, { ...taskItem, task, isCompleted })
-  console.log(tasks);
-  res.json({ msg: 'Successful' })
+  console.log(taskIndex, taskItem)
+  tasks[taskIndex] = { ...taskItem, task, isCompleted }
+  res.json({ msg: 'Task Updated!', tasks })
 })
 
 app.listen(PORT, () => {
