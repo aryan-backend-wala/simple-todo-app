@@ -30,15 +30,17 @@ app.delete('/api/task/:id', (req, res) => {
   const id = req.params.id;
   const taskIndex = tasks.findIndex(task => task.id === parseInt(id));
   tasks.splice(taskIndex, 1);
-  res.json({ tasks });
+  res.json({ msg: 'Successful' });
 })
 
 app.put('/api/task/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const { task, isCompleted } = req.body;
+  console.log(task, isCompleted)
   const taskItem = tasks.find(task => task.id === id);
   tasks.splice(id, 1, { ...taskItem, task, isCompleted })
-  res.json({ tasks })
+  console.log(tasks);
+  res.json({ msg: 'Successful' })
 })
 
 app.listen(PORT, () => {
