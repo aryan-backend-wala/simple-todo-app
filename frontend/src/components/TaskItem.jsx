@@ -4,8 +4,8 @@ export function TaskItem({ todo, onDelete, onUpdate, startEditing }) {
     <input
       type="checkbox"
       checked={todo.isCompleted}
-      onChange={() => onUpdate(todo.id, { isCompleted: !task.isCompleted })}
+      onChange={() => onUpdate(todo._id, { isCompleted: !todo.isCompleted })}
     />
-    <button onClick={() => onDelete(task.id)}>Delete</button>
+    <button onClick={() => onDelete(todo._id)}>Delete</button>
   </li>
 }

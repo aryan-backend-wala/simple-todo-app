@@ -1,5 +1,3 @@
-import { tasks } from '../../todos.js' 
-import { v4 as uuidv4 } from 'uuid';
 import { Todo } from '../models/todos.js';
 
 export const todoList = async (req, res) => {
@@ -37,7 +35,7 @@ export const deleteTodo = async (req, res) => {
   } catch (err) {
     return res.status(400).json({ msg: "for some reason query does not proceed check id please" })
   }
-  res.json({ msg: 'required data is deleted!' })
+  res.json({ msg: 'required data is deleted!', todos: await fetchTodos() })
 }
 
 export const updateTodo = async (req, res) => {

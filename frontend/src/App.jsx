@@ -4,7 +4,7 @@ import { logError } from "./utils/logError";
 
 export default function App() {
   const [todos, setTodos] = useState([]);
-  const [todo, setTodo] = useState('');
+  const [title, setTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState('');
 
@@ -16,6 +16,7 @@ export default function App() {
     try {
       const res = await fetch("/api/todos");
       const data = await res.json();
+      console.log(data.todos)
       setTodos(data.todos)
     } catch (err) {
       logError('Error Fetching tasks', err)
@@ -24,31 +25,28 @@ export default function App() {
 
   async function handleAddTask() {
     try {
-      const res = await fetch("/api/task", {
+      const res = await fetch("/api//todo/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          todo,
-          isCompleted: false
+          title,
         })
       })
       const data = await res.json();
-      setTodos(data.tasks);
-      setTodo("")
+      setTodos(data.todos);
+      setTitle("")
     } catch (err) {
       logError('Error Creating Task', err);
     }
   }
 
   async function handleDeleteTask(id) {
-    const newTask = todos.filter(task => task.id !== id);
-    setTodos(newTask)
     try {
-      const res = await fetch(`/api/task/${id}`, { method: 'DELETE' })
+      const res = await fetch(`/api/todo/delete/${id}`, { method: 'DELETE' })
       const data = await res.json();
-      setTodos(data.tasks);
+      setTodos(data.todos);
     } catch (err) {
       logError('Error deleting task', err)
     }
@@ -56,8 +54,8 @@ export default function App() {
 
   async function handleUpdateTask(id, updatedFields) {
     try {
-      const res = await fetch(`/api/task/${id}`, {
-        method: 'PUT',
+      const res = await fetch(`/api/todo/update/${id}`, {
+        method: 'PATCH',
         headers: {
           "Content-Type": "application/json"
         },
@@ -65,38 +63,38 @@ export default function App() {
       });
 
       const data = await res.json();
-      setTodos(data.tasks);
+      setTodos(data.todos);
       setIsEditing(false)
-      setTodo('')
+      setTitle('')
     } catch (err) {
       logError('Error Updating task', err)
     }
   }
 
-  function startEditing(task) {
-    setTodo(task.task);
+  function startEditing(todo) {
+    setTitle(todo.title);
     setIsEditing(true)
-    setEditingTaskId(task.id)
+    setEditingTaskId(todo._id)
   }
 
   return (
     <div>
       <h1>Simple Todo App</h1>
-      {/* <label>
+      <label>
         <span>Task: </span>
         <input
-          placeholder="Add Task"
-          value={task}
-          onChange={(e) => setTodo(e.target.value)}
+          placeholder="Add Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
         {
-          isEditing ? <button onClick={() => handleUpdateTask(editingTaskId, { task })}>Update</button>
-            : <button onClick={handleAddTask} disabled={!task.trim()}>Add</button>
+          isEditing ? <button onClick={() => handleUpdateTask(editingTaskId, { title })}>Update</button>
+            : <button onClick={handleAddTask} disabled={!title.trim()}>Add</button>
         }
-      </label> */}
+      </label>
       <ul>
         {todos.map(todo => <TaskItem
-          key={todo.id}
+          key={todo._id}
           todo={todo}
           onDelete={handleDeleteTask}
           onUpdate={handleUpdateTask}
