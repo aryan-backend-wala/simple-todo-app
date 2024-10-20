@@ -21,40 +21,42 @@ export const createTodo = async (req, res) => {
     })
   }
 
-  await Todo.create({ ...req.body })
+  try {
+    await Todo.create({ ...req.body })
+  } catch(err) {
+    console.error("Error while creating new todo: ", err);
+  }
 
   res.json({ msg: "Successful", todos: await fetchTodos() })
 }
 
 export const deleteTodo = async (req, res) => {
   const id = req.params.id;
-  await Todo.findByIdAndDelete({ _id: id });
+  try {
+    await Todo.findByIdAndDelete({ _id: id });
+  } catch (err) {
+    return res.status(400).json({ msg: "for some reason query does not proceed check id please" })
+  }
   res.json({ msg: 'required data is deleted!' })
-  // const taskIndex = tasks.findIndex(task => task.id === id);
-  // if(taskIndex === -1) {
-  //   return res.status(404).json({ msg: "Task not found" })
-  // }
-  // tasks.splice(taskIndex, 1);
-  // res.json({ msg: 'Task Deleted!', tasks });
 }
 
 export const updateTodo = async (req, res) => {
+  const _ = validateFields(['title', 'isCompleted'], req.body);
   const id = req.params.id;
-  await Todo.findByIdAndUpdate({ _id: id }, { ...req.body })
-  res.json({ msg: "required data updated!", todos: await fetchTodos() });
-  // const { task, isCompleted } = req.body;
-  // const taskIndex = tasks.findIndex(task => task.id === id);
-  // if(taskIndex === -1) {
-  //   return res.status(404).json({ msg: 'Task not found' })
-  // }
 
-  // const existingTask = tasks[taskIndex];
-  // tasks[taskIndex] = { 
-  //   ...existingTask,
-  //   ...(task && { task: task }),
-  //   ...(isCompleted !== undefined && { isCompleted })
-  //  }
-  // res.json({ msg: 'Task Updated!', tasks })
+  if(_.extraFields.length > 0){
+    return res.status(400).json({
+      msg: 'Invalids field present: ' + _.extraFields.join(', '),
+      allowedFields: _.allowedFields.join(', ')
+    })
+  }
+
+  try {
+    await Todo.findByIdAndUpdate({ _id: id }, { ...req.body })
+  } catch(err) {
+    return res.status(400).json({ msg: "for some reason query does not proceed check id please" })
+  }
+  res.json({ msg: "required data updated!", todos: await fetchTodos() });
 }
 
 async function fetchTodos(){
