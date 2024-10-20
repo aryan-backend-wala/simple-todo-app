@@ -1,10 +1,10 @@
-export function TaskItem({ task, onDelete, onUpdate, startEditing }) {
+export function TaskItem({ todo, onDelete, onUpdate, startEditing }) {
   return <li>
-    <span className={task.isCompleted ? 'line' : ''} onClick={() => startEditing(task)}>{task.task}</span>
+    <span className={todo.isCompleted ? 'line' : ''} onClick={() => startEditing(todo)}>{todo.title}</span>
     <input
       type="checkbox"
-      checked={task.isCompleted}
-      onChange={() => onUpdate(task.id, { isCompleted: !task.isCompleted })}
+      checked={todo.isCompleted}
+      onChange={() => onUpdate(todo.id, { isCompleted: !task.isCompleted })}
     />
     <button onClick={() => onDelete(task.id)}>Delete</button>
   </li>

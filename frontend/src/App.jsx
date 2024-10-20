@@ -3,8 +3,8 @@ import { TaskItem } from "./components/TaskItem";
 import { logError } from "./utils/logError";
 
 export default function App() {
-  const [tasks, setTasks] = useState([]);
-  const [task, setTask] = useState('');
+  const [todos, setTodos] = useState([]);
+  const [todo, setTodo] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState('');
 
@@ -14,9 +14,9 @@ export default function App() {
 
   async function fetchTasks() {
     try {
-      const res = await fetch("/api/tasks");
+      const res = await fetch("/api/todos");
       const data = await res.json();
-      setTasks(data.tasks)
+      setTodos(data.todos)
     } catch (err) {
       logError('Error Fetching tasks', err)
     }
@@ -30,25 +30,25 @@ export default function App() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          task,
+          todo,
           isCompleted: false
         })
       })
       const data = await res.json();
-      setTasks(data.tasks);
-      setTask("")
+      setTodos(data.tasks);
+      setTodo("")
     } catch (err) {
       logError('Error Creating Task', err);
     }
   }
 
   async function handleDeleteTask(id) {
-    const newTask = tasks.filter(task => task.id !== id);
-    setTasks(newTask)
+    const newTask = todos.filter(task => task.id !== id);
+    setTodos(newTask)
     try {
       const res = await fetch(`/api/task/${id}`, { method: 'DELETE' })
       const data = await res.json();
-      setTasks(data.tasks);
+      setTodos(data.tasks);
     } catch (err) {
       logError('Error deleting task', err)
     }
@@ -65,16 +65,16 @@ export default function App() {
       });
 
       const data = await res.json();
-      setTasks(data.tasks);
+      setTodos(data.tasks);
       setIsEditing(false)
-      setTask('')
+      setTodo('')
     } catch (err) {
       logError('Error Updating task', err)
     }
   }
 
   function startEditing(task) {
-    setTask(task.task);
+    setTodo(task.task);
     setIsEditing(true)
     setEditingTaskId(task.id)
   }
@@ -82,22 +82,22 @@ export default function App() {
   return (
     <div>
       <h1>Simple Todo App</h1>
-      <label>
+      {/* <label>
         <span>Task: </span>
         <input
           placeholder="Add Task"
           value={task}
-          onChange={(e) => setTask(e.target.value)}
+          onChange={(e) => setTodo(e.target.value)}
         />
         {
           isEditing ? <button onClick={() => handleUpdateTask(editingTaskId, { task })}>Update</button>
             : <button onClick={handleAddTask} disabled={!task.trim()}>Add</button>
         }
-      </label>
+      </label> */}
       <ul>
-        {tasks.map(task => <TaskItem
-          key={task.id}
-          task={task}
+        {todos.map(todo => <TaskItem
+          key={todo.id}
+          todo={todo}
           onDelete={handleDeleteTask}
           onUpdate={handleUpdateTask}
           startEditing={startEditing}

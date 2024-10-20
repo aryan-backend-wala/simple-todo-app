@@ -8,12 +8,12 @@ import {
 
 const router = express.Router();
 
-router.get('/tasks', todoList )
+router.get('/todos', todoList )
 
-router.post('/task', createTodo)
+router.post('/todo/create', createTodo)
 
-router.delete('/task/:id', deleteTodo)
+router.patch('/todo/update/:id', updateTodo)
 
-router.put('/task/:id', updateTodo)
+router.delete('/todo/delete/:id', deleteTodo)
 
 export default router
