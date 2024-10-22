@@ -7,16 +7,47 @@ export default function App() {
   const [title, setTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState('');
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
 
   useEffect(() => {
     fetchTasks();
   }, [])
 
+  async function handleLogin(){
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username,
+          password
+        })
+      });
+      const data = await res.json();
+      if(res.ok) {
+        localStorage.setItem('token', data.token);
+        setToken(data.token)
+      } else {
+        alert(data.msg);
+      }
+    } catch(err) {
+      console.error('Error while logging in: ', err);
+    }
+  }
+
   async function fetchTasks() {
     try {
-      const res = await fetch("/api/todos");
+      const res = await fetch("/api/todos", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       const data = await res.json();
-      console.log(data.todos)
       setTodos(data.todos)
     } catch (err) {
       logError('Error Fetching tasks', err)
@@ -28,7 +59,8 @@ export default function App() {
       const res = await fetch("/api//todo/create", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           title,
@@ -44,7 +76,9 @@ export default function App() {
 
   async function handleDeleteTask(id) {
     try {
-      const res = await fetch(`/api/todo/delete/${id}`, { method: 'DELETE' })
+      const res = await fetch(`/api/todo/delete/${id}`, { method: 'DELETE', headers: {
+        Authorization: `Bearer ${token}`
+      } })
       const data = await res.json();
       setTodos(data.todos);
     } catch (err) {
@@ -57,7 +91,8 @@ export default function App() {
       const res = await fetch(`/api/todo/update/${id}`, {
         method: 'PATCH',
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(updatedFields)
       });
@@ -75,6 +110,15 @@ export default function App() {
     setTitle(todo.title);
     setIsEditing(true)
     setEditingTaskId(todo._id)
+  }
+
+  if(!token) {
+    return <div>
+      <h2>Login</h2>
+      <input placeholder="admin" value={username} onChange={(e) => setUsername(e.target.value)} />
+      <input placeholder="1234" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <button onClick={handleLogin}>Login</button>
+    </div>
   }
 
   return (
