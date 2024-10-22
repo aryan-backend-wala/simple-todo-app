@@ -12,8 +12,10 @@ export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
 
   useEffect(() => {
-    fetchTasks();
-  }, [])
+    if(token) {
+      fetchTasks();
+    }
+  }, [token])
 
   async function handleLogin(){
     try {
@@ -42,7 +44,6 @@ export default function App() {
   async function fetchTasks() {
     try {
       const res = await fetch("/api/todos", {
-        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`
         }
